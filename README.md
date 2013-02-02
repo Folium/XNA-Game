@@ -1,4 +1,4 @@
 XNA-Game
 ========
 
-Folium game repository
+Folium code repository
