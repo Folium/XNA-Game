@@ -1,0 +1,44 @@
+Naming conventions
+	Classes: 				Upper CamelCase (InputManager, not inputManager)
+	Functions:				Lower CamelCase
+	Public variables:		Lower CamelCase
+	Protected variables:	Lower CamelCase, starts with underscore (_mousePos, not mousePos)
+	Private variables:		Lower CamelCase, starts with underscore
+	
+Class layout
+	class ClassName
+	{
+		enumerations
+		{
+		}
+		
+		public variables: static/const before ordinary variables
+		
+		protected variables: same as public
+		
+		private variables: same as public
+		
+		constructors()
+		{
+		}
+		
+		getters()
+		{
+		}
+		
+		setters()
+		{
+		}
+		
+		public functions()
+		{
+		}
+		
+		protected functions()
+		{
+		}
+		
+		private functions()
+		{
+		}
+	}

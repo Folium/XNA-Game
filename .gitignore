@@ -1,0 +1,9 @@
+Thumbs.db
+#File types
+*.suo
+*.user
+#Folders
+[Bb]in/
+[Dd]ebug*/
+[Rr]elease*/
+obj/
