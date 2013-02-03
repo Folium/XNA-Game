@@ -18,7 +18,7 @@ namespace Folium.Entities
         protected Texture2D     _texture;
         protected Vector2       _position;
 
-        DrawableEntity(GameManager gameManager, Screen screen)
+        public DrawableEntity(GameManager gameManager, Screen screen)
         {
             doDraw          = true;
 
@@ -44,7 +44,7 @@ namespace Folium.Entities
         {
         }
 
-        public virtual void update(double dT)
+        public virtual void update(float dT)
         {
         }
 

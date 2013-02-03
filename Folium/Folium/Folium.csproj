@@ -107,7 +107,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\DrawableEntity.cs" />
+    <Compile Include="Entities\DrawableEntity.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entities\Food.cs" />
+    <Compile Include="Entities\Leaf.cs" />
+    <Compile Include="Entities\MovableEntity.cs" />
+    <Compile Include="Entities\Pickup.cs" />
     <Compile Include="Main\InputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main\Program.cs" />
