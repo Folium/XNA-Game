@@ -28,6 +28,10 @@ namespace Folium.Screens
         public String getName() { return _name; }
         #endregion
 
+        public virtual void initialize()
+        {
+        }
+
         #region Screen commands
         /// <summary>
         /// Starts/resumes this screen and puts it on the screens stack, if this isn't already the case.
@@ -63,14 +67,13 @@ namespace Folium.Screens
         }
         #endregion
 
-        public virtual void initialize(bool doLoadContent = true)
+        public void addEntity(DrawableEntity entity, bool doInit = true)
         {
-            if (doLoadContent)
-                loadContent();
-        }
+            _entities.Add(entity);
+            entity.setScreen(this);
 
-        public virtual void loadContent()
-        {
+            if(doInit)
+                entity.initialize();
         }
 
         public virtual void update(float dT)
@@ -88,7 +91,7 @@ namespace Folium.Screens
                 return;
 
             for (int i = 0; i < _entities.Count; i++)
-                _entities[i].draw(spriteBatch);
+                _entities[i].drawWorldSpace(spriteBatch);
         }
     }
 }

@@ -15,8 +15,9 @@ namespace Folium.Main
         private static MouseState currentMouseState;
         private static MouseState lastMouseState;
 
-        private static int deltaMouseScrollWheel;
+        private static Vector2 mousePos;
 
+        private static int deltaMouseScrollWheel;
         private static int prevMouseScrollWheel;
 
         private GameManager gameManager;
@@ -44,6 +45,8 @@ namespace Folium.Main
             //Update mouse state
             lastMouseState      = currentMouseState;
             currentMouseState   = Mouse.GetState();
+            mousePos.X          = currentMouseState.X;
+            mousePos.Y          = currentMouseState.Y;
 
             //Update scrollwheel state
             deltaMouseScrollWheel   = currentMouseState.ScrollWheelValue - prevMouseScrollWheel;
@@ -123,6 +126,11 @@ namespace Folium.Main
         public static bool isMouseRightReleased()
         {
             return (lastMouseState.RightButton == ButtonState.Pressed && currentMouseState.RightButton == ButtonState.Released);
+        }
+
+        public static Vector2 getMousePos()
+        {
+            return mousePos;
         }
 
         public static int getMouseX()
