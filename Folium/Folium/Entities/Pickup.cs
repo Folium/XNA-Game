@@ -7,7 +7,7 @@ using Folium.Screens;
 
 namespace Folium.Entities
 {
-    class Pickup : DrawableEntity
+    public class Pickup : DrawableEntity
     {
         public Pickup(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
