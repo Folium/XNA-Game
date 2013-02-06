@@ -82,7 +82,12 @@ namespace Folium.Screens
                 return;
 
             for (int i = 0; i < _entities.Count; i++)
+            {
                 _entities[i].update(dT);
+
+                if(!_entities[i].isAlive())
+                    _entities.RemoveAt(i--);
+            }
         }
 
         public virtual void draw(SpriteBatch spriteBatch)

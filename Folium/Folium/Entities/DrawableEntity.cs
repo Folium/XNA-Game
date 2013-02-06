@@ -20,6 +20,7 @@ namespace Folium.Entities
         protected Color         _drawColor;
         protected float         _drawScale;
         protected float         _rotation;
+        protected bool          _alive;
 
         public DrawableEntity(GameManager gameManager, Screen screen)
         {
@@ -32,6 +33,7 @@ namespace Folium.Entities
             _drawColor      = Color.White;
             _drawScale      = 1;
             _rotation       = 0;
+            _alive          = true;
         }
 
         public DrawableEntity(GameManager gameManager, Screen screen, String texture)
@@ -45,10 +47,12 @@ namespace Folium.Entities
             _drawColor      = Color.White;
             _drawScale      = 1;
             _rotation       = 0;
+            _alive          = true;
         }
 
         #region Getters/Setters
         public Vector2 getPosition() { return _position; }
+        public bool isAlive() { return _alive; }
 
         public void setPosition(Vector2 a) { _position = a; }
         public void setScreen(Screen a) { _screen = a; }
@@ -56,6 +60,11 @@ namespace Folium.Entities
 
         public virtual void initialize()
         {
+        }
+
+        public virtual void kill()
+        {
+            _alive = false;
         }
 
         public virtual void update(float dT)

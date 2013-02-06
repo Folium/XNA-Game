@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Folium.Screens;
+using System.IO;
 
 namespace Folium.Main
 {
@@ -29,11 +30,13 @@ namespace Folium.Main
 
         public GameManager()
         {
+            new Config("../../../settings.config");
+
             _graphics               = new GraphicsDeviceManager(this);
             Content.RootDirectory   = "Content";
             currentTimeMillis       = 0;
-            _scrollSpeed            = 512;
-            _zoomSpeed              = 0.001f;
+            _scrollSpeed            = Config.settings["ScrollSpeed"];
+            _zoomSpeed              = Config.settings["ZoomSpeed"];
         }
 
         //LoadContent is called BEFORE Initialize

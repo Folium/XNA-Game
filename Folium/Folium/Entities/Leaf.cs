@@ -24,12 +24,22 @@ namespace Folium.Entities
         protected int           _pulseDrain;
         protected float         _radius;
 
+        private float           _lifeLossPerSecond;
+        private float           _maxLife;
+        private float           _life;
+
         private float           _scaleVelocity;
         private float           _targetScale;
         private bool            _doingScaleAnimation;
 
         private int             _pulseStrength;
         private PulseStage      _pulseStage;
+        private float           _pulseSmallScale;
+        private float           _pulseLargeScale;
+        private float           _pulseSmallOutDuration;
+        private float           _pulseSmallInDuration;
+        private float           _pulseLargeOutDuration;
+        private float           _pulseLargeInDuration;
 
         public Leaf(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
@@ -43,8 +53,17 @@ namespace Folium.Entities
             _pulseStage             = PulseStage.Done;
             _scaleVelocity          = 0;
             _doingScaleAnimation    = false;
-            _targetScale            = _radius;
+            _targetScale            = 1;
             _drawScale              = _radius/_texture.Width * 2;
+            _pulseSmallScale        = Config.settings["PulseSmallScale"];
+            _pulseLargeScale        = Config.settings["PulseLargeScale"];
+            _pulseSmallOutDuration  = Config.settings["PulseSmallOutDuration"];
+            _pulseSmallInDuration   = Config.settings["PulseSmallInDuration"];
+            _pulseLargeOutDuration  = Config.settings["PulseLargeOutDuration"];
+            _pulseLargeInDuration   = Config.settings["PulseLargeInDuration"];
+            _lifeLossPerSecond      = Config.settings["LifeLossPerSecond"];
+            _maxLife                = Config.settings["MaxLife"];
+            _life                   = _maxLife;
         }
 
         public void setTargetScale(float targetScale, float effectDuration)
@@ -60,14 +79,21 @@ namespace Folium.Entities
 
             if (pulseStrength > 0)
             {
+                _life       = _maxLife;
                 _pulseStage = PulseStage.outSmall;
-                setTargetScale(1.025f, 0.1f);
+                setTargetScale(_pulseSmallScale, _pulseSmallOutDuration);
             }
         }
 
         public override void update(float dT)
         {
             base.update(dT);
+
+            //Decrease life
+            _life -= _lifeLossPerSecond * dT;
+            
+            if(_life <= 0)
+                kill();
 
             //Scale animation
             if (_doingScaleAnimation)
@@ -84,18 +110,20 @@ namespace Folium.Entities
                     {
                         case PulseStage.outSmall:
                             _pulseStage = PulseStage.inSmall;
-                            setTargetScale(1.0f, 0.1f);
+                            setTargetScale(1.0f, _pulseSmallInDuration);
                             break;
                         case PulseStage.inSmall:
                             _pulseStage = PulseStage.outLarge;
-                            setTargetScale(1.05f, 0.1f);
+                            setTargetScale(_pulseLargeScale, _pulseLargeOutDuration);
                             break;
                         case PulseStage.outLarge:
                             _pulseStage = PulseStage.inLarge;
-                            setTargetScale(1.0f, 0.2f);
+                            setTargetScale(1.0f, _pulseLargeInDuration);
                             break;
                         case PulseStage.inLarge:
                             _pulseStage = PulseStage.Done;
+                            for (int i = 0; i < _children.Count; i++)
+                                _children[i].pulse(_pulseStrength - _pulseDrain); //Pulse the children
                             break;
                     }
                 }
