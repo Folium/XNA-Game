@@ -10,33 +10,50 @@ namespace Folium.Screens
 {
     public class GameScreen : Screen
     {
-        private List<Pickup> pickups;
+        private List<Pickup> _pickups;
+        private List<Heart> _hearts;
+
+        private float _timeBetweenPulses;
+        private float _lastPulseTime;
 
         public GameScreen(GameManager gameManager)
             : base(gameManager, "Game")
         {
-            pickups = new List<Pickup>(32);
+            _pickups            = new List<Pickup>(32);
+            _hearts             = new List<Heart>();
+            _timeBetweenPulses  = Config.settings["HeartTimeBetweenPulses"];
+            _lastPulseTime      = 0;
         }
 
         #region Getters/Setters
-        public List<Pickup> getPickups() {return pickups;}
+        public List<Pickup> getPickups() {return _pickups;}
         #endregion
 
         public override void initialize()
         {
             base.initialize();
 
-            //Add test entity
-            Leaf testLeaf = new Leaf(_gameManager, this);
-            addEntity(testLeaf);
+            //Add primary heart
+            addHeart(new Heart(_gameManager, this));
+        }
+
+        public void addHeart(Heart heart, bool doInit = true)
+        {
+            _hearts.Add(heart);
+            addEntity(heart, doInit);
         }
 
         public override void update(float dT)
         {
             base.update(dT);
 
-            if(InputManager.isKeyReleased(Keys.Space))
-                ((Leaf)_entities[0]).pulse(1);
+            //Pulse hearts
+            if (GameManager.currentTime - _lastPulseTime >= _timeBetweenPulses)
+            {
+                _lastPulseTime = GameManager.currentTime;
+                for (int i = 0; i < _hearts.Count; i++)
+                    _hearts[i].pulse();
+            }
         }
     }
 }

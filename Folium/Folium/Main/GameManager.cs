@@ -15,13 +15,12 @@ namespace Folium.Main
 {
     public class GameManager : Microsoft.Xna.Framework.Game
     {
-        public static int SCREENWIDTH       = 1280;
-        public static int SCREENHEIGHT      = 720;
-        public static Vector2 worldOrigin   = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
-        public static Vector2 screenCenter  = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
-        public static float zoomLevel       = 1;
-
-        public float currentTimeMillis;
+        public static int SCREENWIDTH           = 1280;
+        public static int SCREENHEIGHT          = 720;
+        public static Vector2 worldOrigin       = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
+        public static Vector2 screenCenter      = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
+        public static float zoomLevel           = 1;
+        public static float currentTime         = 0;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -34,7 +33,7 @@ namespace Folium.Main
 
             _graphics               = new GraphicsDeviceManager(this);
             Content.RootDirectory   = "Content";
-            currentTimeMillis       = 0;
+            currentTime             = 0;
             _scrollSpeed            = Config.settings["ScrollSpeed"];
             _zoomSpeed              = Config.settings["ZoomSpeed"];
         }
@@ -71,7 +70,7 @@ namespace Folium.Main
         protected override void Update(GameTime gameTime)
         {
             float deltaTime     = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            currentTimeMillis   = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            currentTime         = (float)gameTime.TotalGameTime.TotalSeconds;
 
             InputManager.update();
 
