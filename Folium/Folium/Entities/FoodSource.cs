@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Folium.Entities
 {
-    class Food : DrawableEntity
+    class FoodSource : DrawableEntity
     {
         private float _energyAmount;
 
-        public Food(GameManager gameManager, Screen screen)
+        public FoodSource(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
             _texture        = gameManager.Content.Load<Texture2D>("Textures/energy_source_160");
