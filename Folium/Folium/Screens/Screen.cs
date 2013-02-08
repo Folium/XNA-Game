@@ -76,6 +76,11 @@ namespace Folium.Screens
                 entity.initialize();
         }
 
+        public virtual void removeEntity(DrawableEntity entity)
+        {
+            _entities.Remove(entity);
+        }
+
         public virtual void update(float dT)
         {
             if (!_doUpdate)
@@ -86,7 +91,7 @@ namespace Folium.Screens
                 _entities[i].update(dT);
 
                 if(!_entities[i].isAlive())
-                    _entities.RemoveAt(i--);
+                    removeEntity(_entities[i--]);
             }
         }
 

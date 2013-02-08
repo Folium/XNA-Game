@@ -19,47 +19,51 @@ namespace Folium.Entities
             outLarge
         }
 
-        protected List<Leaf>    _parents;
-        protected List<Leaf>    _children;
-        protected int           _pulseDrain;
-        protected float         _radius;
+        protected List<Leaf> _parents;
+        protected List<Leaf> _children;
+        protected int _pulseDrain;
+        protected float _radius;
+        protected float _drawRadius;
+        protected float _normalRadius;
 
-        protected bool          _doPulsePassOn;
-        protected int           _pulseStrength;
-        protected PulseStage    _pulseStage;
-        protected float         _pulseSmallScale;
-        protected float         _pulseLargeScale;
-        protected float         _pulseSmallOutDuration;
-        protected float         _pulseSmallInDuration;
-        protected float         _pulseLargeOutDuration;
-        protected float         _pulseLargeInDuration;
-        protected float         _pulsePassOnTime;
-        protected float         _lastPulseTime;
+        protected bool _doPulsePassOn;
+        protected int _pulseStrength;
+        protected PulseStage _pulseStage;
+        protected float _pulseSmallRadius;
+        protected float _pulseLargeRadius;
+        protected float _pulseSmallOutDuration;
+        protected float _pulseSmallInDuration;
+        protected float _pulseLargeOutDuration;
+        protected float _pulseLargeInDuration;
+        protected float _pulsePassOnTime;
+        protected float _lastPulseTime;
+        protected float _lifeLossPerSecond;
 
-        private float           _lifeLossPerSecond;
-        private float           _maxLife;
-        private float           _life;
+        private float _maxLife;
+        private float _life;
 
-        private float           _scaleVelocity;
-        private float           _targetScale;
-        private bool            _doingScaleAnimation;
+        private float _radiusScaleVelocity;
+        private float _targetRadius;
+        private bool _doingRadiusAnimation;
 
         public Leaf(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
             _texture                = gameManager.Content.Load<Texture2D>("Textures/circle_white_320");
-            _radius                 = 160;
+            _radius                 = Config.settings["LeafRadius"];
+            _normalRadius           = _radius;
+            _drawRadius             = _radius;
             _parents                = new List<Leaf>();
             _children               = new List<Leaf>();
             _pulseDrain             = 1;
             _pulseStrength          = 0;
             _pulseStage             = PulseStage.Done;
-            _scaleVelocity          = 0;
-            _doingScaleAnimation    = false;
-            _targetScale            = 1;
+            _radiusScaleVelocity    = 0;
+            _doingRadiusAnimation   = false;
+            _targetRadius           = 1;
             _drawScale              = _radius/_texture.Width * 2;
-            _pulseSmallScale        = Config.settings["LeafPulseSmallScale"];
-            _pulseLargeScale        = Config.settings["LeafPulseLargeScale"];
+            _pulseSmallRadius       = Config.settings["LeafPulseSmallRadius"];
+            _pulseLargeRadius       = Config.settings["LeafPulseLargeRadius"];
             _pulseSmallOutDuration  = Config.settings["LeafPulseSmallOutDuration"];
             _pulseSmallInDuration   = Config.settings["LeafPulseSmallInDuration"];
             _pulseLargeOutDuration  = Config.settings["LeafPulseLargeOutDuration"];
@@ -72,16 +76,29 @@ namespace Folium.Entities
             _doPulsePassOn          = false;
         }
 
+        #region Getters/Setters
+        public int getPulseStrength() { return _pulseStrength; }
+        public float getRadius() { return _radius; }
+
+        public void setRadius(float radius) 
+        {
+            _radius         = radius;
+            _drawRadius     = radius;
+            _normalRadius   = radius;
+            _drawScale      = _radius/_texture.Width * 2;
+        }
+        #endregion
+
         /// <summary>
         /// Sets the target scale and the time it should take to reach this scale.
         /// </summary>
-        /// <param name="targetScale"></param>
+        /// <param name="targetRadius"></param>
         /// <param name="effectDuration"></param>
-        public void setTargetScale(float targetScale, float effectDuration)
+        public void setTargetRadius(float targetRadius, float effectDuration)
         {
-            _targetScale            = targetScale;
-            _scaleVelocity          = (targetScale - _drawScale)/effectDuration;
-            _doingScaleAnimation    = true;
+            _targetRadius           = targetRadius;
+            _radiusScaleVelocity    = (targetRadius - _drawRadius)/effectDuration;
+            _doingRadiusAnimation   = true;
         }
 
         /// <summary>
@@ -98,7 +115,7 @@ namespace Folium.Entities
                 _doPulsePassOn  = true;
                 _life           = _maxLife;
                 _pulseStage     = PulseStage.outSmall;
-                setTargetScale(_pulseSmallScale, _pulseSmallOutDuration);
+                setTargetRadius(_pulseSmallRadius, _pulseSmallOutDuration);
             }
         }
 
@@ -109,29 +126,30 @@ namespace Folium.Entities
         /// <param name="dT"></param>
         public virtual void updateScaleAnimation(float dT)
         {
-            if (_doingScaleAnimation)
+            if (_doingRadiusAnimation)
             {
-                _drawScale += _scaleVelocity * dT;
+                _drawRadius += _radiusScaleVelocity * dT;
+                _drawScale  = _drawRadius/_texture.Width * 2;
 
-                if ((_scaleVelocity > 0 && _drawScale >= _targetScale) ||
-                    (_scaleVelocity < 0 && _drawScale <= _targetScale))
+                if ((_radiusScaleVelocity > 0 && _drawRadius >= _targetRadius) ||
+                    (_radiusScaleVelocity < 0 && _drawRadius <= _targetRadius))
                 {
-                    _drawScale              = _targetScale;
-                    _doingScaleAnimation    = false;
+                    _drawRadius             = _targetRadius;
+                    _doingRadiusAnimation   = false;
 
                     switch (_pulseStage)
                     {
                         case PulseStage.outSmall:
                             _pulseStage = PulseStage.inSmall;
-                            setTargetScale(1.0f, _pulseSmallInDuration);
+                            setTargetRadius(_normalRadius, _pulseSmallInDuration);
                             break;
                         case PulseStage.inSmall:
                             _pulseStage = PulseStage.outLarge;
-                            setTargetScale(_pulseLargeScale, _pulseLargeOutDuration);
+                            setTargetRadius(_pulseLargeRadius, _pulseLargeOutDuration);
                             break;
                         case PulseStage.outLarge:
                             _pulseStage = PulseStage.inLarge;
-                            setTargetScale(1.0f, _pulseLargeInDuration);
+                            setTargetRadius(_normalRadius, _pulseLargeInDuration);
                             break;
                         case PulseStage.inLarge:
                             _pulseStage = PulseStage.Done;
@@ -141,14 +159,32 @@ namespace Folium.Entities
             }
         }
 
+        /// <summary>
+        /// This function is recursively called on the parents until it reaches a heart or a leaf that has no parents.
+        /// </summary>
+        /// <param name="?"></param>
+        public virtual void registerEnergyLeaf(Leaf leafToRegister)
+        {
+            for (int i = 0; i < _parents.Count; i++)
+                _parents[i].registerEnergyLeaf(leafToRegister);
+        }
+
+        public void addChild(Leaf child)
+        {
+            if (!_children.Contains(child))
+                _children.Add(child);
+            if (!child._parents.Contains(this))
+                child._parents.Add(this);
+        }
+
         public override void update(float dT)
         {
             base.update(dT);
 
             //Decrease life
             _life -= _lifeLossPerSecond * dT;
-            
-            if(_life <= 0)
+
+            if (_life <= 0)
                 kill();
 
             //Scale animation

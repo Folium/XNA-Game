@@ -56,6 +56,8 @@ namespace Folium.Entities
 
         public void setPosition(Vector2 a) { _position = a; }
         public void setScreen(Screen a) { _screen = a; }
+        public void setScale(float a) { _drawScale = a; }
+        public void setColor(Color a) { _drawColor = a; }
         #endregion
 
         public virtual void initialize()
