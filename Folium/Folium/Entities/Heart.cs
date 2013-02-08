@@ -11,7 +11,6 @@ namespace Folium.Entities
     public class Heart : Leaf
     {
         private List<Leaf> _connectedEnergyLeaves;
-        private int _pulseStrength;
 
         public Heart(GameManager gameManager, Screen screen)
             : base(gameManager, screen)

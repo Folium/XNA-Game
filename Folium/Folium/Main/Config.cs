@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 
 namespace Folium.Main
 {
@@ -21,7 +22,7 @@ namespace Folium.Main
                 switch (configFile.NodeType)
                 {
                     case XmlNodeType.Element: elementName = configFile.Name; break;
-                    case XmlNodeType.Text: settings.Add(elementName, Convert.ToSingle(configFile.Value)); break;
+                    case XmlNodeType.Text: settings.Add(elementName, Convert.ToSingle(configFile.Value, CultureInfo.InvariantCulture)); break;
                 }
             }
 
