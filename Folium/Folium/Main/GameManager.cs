@@ -15,12 +15,15 @@ namespace Folium.Main
 {
     public class GameManager : Microsoft.Xna.Framework.Game
     {
+        public const int NUM_COLORS = 2;
+
         public static int SCREENWIDTH           = 1280;
         public static int SCREENHEIGHT          = 720;
         public static Vector2 worldOrigin       = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
         public static Vector2 screenCenter      = new Vector2(SCREENWIDTH/2, SCREENHEIGHT/2);
         public static float zoomLevel           = 1;
         public static float currentTime         = 0;
+        public static Color[] leafColors        = new Color[NUM_COLORS];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;

@@ -28,7 +28,7 @@ namespace Folium.Screens
             _hearts             = new List<Heart>();
             _leaves             = new List<Leaf>(32);
             _seedCursor         = new DrawableEntity(gameManager, this, "Textures/placement_cursor");
-            _timeBetweenPulses  = Config.settings["HeartTimeBetweenPulses"];
+            _timeBetweenPulses  = Config.settings["Heart.TimeBetweenPulses"];
             _lastPulseTime      = 0;
 
             _seedCursor.setScale(0.25f);
@@ -56,7 +56,7 @@ namespace Folium.Screens
         public void addLeaf(Leaf leaf, bool doInit = true)
         {
             _leaves.Add(leaf);
-            addEntity(leaf, doInit);
+            addEntity(leaf, true, doInit);
         }
 
         public override void removeEntity(DrawableEntity entity)

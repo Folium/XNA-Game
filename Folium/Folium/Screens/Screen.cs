@@ -67,9 +67,13 @@ namespace Folium.Screens
         }
         #endregion
 
-        public void addEntity(DrawableEntity entity, bool doInit = true)
+        public void addEntity(DrawableEntity entity, bool addAsFirst = false, bool doInit = true)
         {
-            _entities.Add(entity);
+            if(addAsFirst)
+                _entities.Insert(0, entity);
+            else
+                _entities.Add(entity);
+                
             entity.setScreen(this);
 
             if(doInit)

@@ -51,14 +51,15 @@ namespace Folium.Entities
 
         private float           _selectedTextureScale;
         private Texture2D       _selectedTexture;
-        private Color           _selectedColor;
+
+        private float[]         _distToColors;
 
         public Leaf(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
             _texture                = gameManager.Content.Load<Texture2D>("Textures/circle_white_320");
             _selectedTexture        = gameManager.Content.Load<Texture2D>("Textures/circle_edge_white_320");
-            _radius                 = Config.settings["LeafRadius"];
+            _radius                 = Config.settings["Leaf.Radius"];
             _normalRadius           = _radius;
             _drawRadius             = _radius;
             _parents                = new List<Leaf>();
@@ -71,20 +72,20 @@ namespace Folium.Entities
             _targetRadius           = 1;
             _drawScale              = _radius/_texture.Width * 2;
             _selectedTextureScale   = _normalRadius/_selectedTexture.Width * 2;
-            _pulseSmallRadius       = Config.settings["LeafPulseSmallRadius"];
-            _pulseLargeRadius       = Config.settings["LeafPulseLargeRadius"];
-            _pulseSmallOutDuration  = Config.settings["LeafPulseSmallOutDuration"];
-            _pulseSmallInDuration   = Config.settings["LeafPulseSmallInDuration"];
-            _pulseLargeOutDuration  = Config.settings["LeafPulseLargeOutDuration"];
-            _pulseLargeInDuration   = Config.settings["LeafPulseLargeInDuration"];
-            _lifeLossPerSecond      = Config.settings["LeafLifeLossPerSecond"];
-            _maxLife                = Config.settings["LeafMaxLife"];
-            _pulsePassOnTime        = Config.settings["LeafPulsePassOnTime"];
+            _pulseSmallRadius       = Config.settings["Leaf.PulseSmallRadius"];
+            _pulseLargeRadius       = Config.settings["Leaf.PulseLargeRadius"];
+            _pulseSmallOutDuration  = Config.settings["Leaf.PulseSmallOutDuration"];
+            _pulseSmallInDuration   = Config.settings["Leaf.PulseSmallInDuration"];
+            _pulseLargeOutDuration  = Config.settings["Leaf.PulseLargeOutDuration"];
+            _pulseLargeInDuration   = Config.settings["Leaf.PulseLargeInDuration"];
+            _lifeLossPerSecond      = Config.settings["Leaf.LifeLossPerSecond"];
+            _maxLife                = Config.settings["Leaf.MaxLife"];
+            _pulsePassOnTime        = Config.settings["Leaf.PulsePassOnTime"];
             _lastPulseTime          = 0;
             _life                   = _maxLife;
             _doPulsePassOn          = false;
             isSelected              = false;
-            _selectedColor          = new Color(47, 79, 79, 150);
+            _distToColors           = new float[GameManager.NUM_COLORS];
         }
 
         #region Getters/Setters
@@ -221,7 +222,8 @@ namespace Folium.Entities
                 Vector2 posScreenSpace = GameManager.worldOrigin + _position * GameManager.zoomLevel;
 
                 spriteBatch.Draw(_selectedTexture, posScreenSpace, null,
-                                 _selectedColor, _rotation, new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
+                                 Color.FromNonPremultiplied(47, 79, 79, 80), _rotation, 
+                                 new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
                                  _selectedTextureScale * GameManager.zoomLevel, SpriteEffects.None, 0);
             }
         }

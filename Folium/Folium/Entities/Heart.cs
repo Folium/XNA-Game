@@ -17,17 +17,17 @@ namespace Folium.Entities
         {
             _drawColor              = Color.IndianRed;
             _connectedEnergyLeaves  = new List<Leaf>();
-            _pulseStrength          = (int)Config.settings["HeartInitialPulseStrength"];
-            _pulseSmallRadius       = Config.settings["HeartPulseSmallRadius"];
-            _pulseLargeRadius       = Config.settings["HeartPulseLargeRadius"];
-            _pulseSmallOutDuration  = Config.settings["HeartPulseSmallOutDuration"];
-            _pulseSmallInDuration   = Config.settings["HeartPulseSmallInDuration"];
-            _pulseLargeOutDuration  = Config.settings["HeartPulseLargeOutDuration"];
-            _pulseLargeInDuration   = Config.settings["HeartPulseLargeInDuration"];
-            _pulsePassOnTime        = Config.settings["HeartPulsePassOnTime"];
+            _pulseStrength          = (int)Config.settings["Heart.InitialPulseStrength"];
+            _pulseSmallRadius       = Config.settings["Heart.PulseSmallRadius"];
+            _pulseLargeRadius       = Config.settings["Heart.PulseLargeRadius"];
+            _pulseSmallOutDuration  = Config.settings["Heart.PulseSmallOutDuration"];
+            _pulseSmallInDuration   = Config.settings["Heart.PulseSmallInDuration"];
+            _pulseLargeOutDuration  = Config.settings["Heart.PulseLargeOutDuration"];
+            _pulseLargeInDuration   = Config.settings["Heart.PulseLargeInDuration"];
+            _pulsePassOnTime        = Config.settings["Heart.PulsePassOnTime"];
             _lifeLossPerSecond      = 0;
 
-            setRadius(Config.settings["HeartRadius"]);
+            setRadius(Config.settings["Heart.Radius"]);
         }
 
         public void pulse()
