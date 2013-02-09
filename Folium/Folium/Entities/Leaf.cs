@@ -5,6 +5,7 @@ using System.Text;
 using Folium.Main;
 using Folium.Screens;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Folium.Entities
 {
@@ -19,37 +20,44 @@ namespace Folium.Entities
             outLarge
         }
 
-        protected List<Leaf> _parents;
-        protected List<Leaf> _children;
-        protected int _pulseDrain;
-        protected float _radius;
-        protected float _drawRadius;
-        protected float _normalRadius;
+        public bool isSelected;
 
-        protected bool _doPulsePassOn;
-        protected int _pulseStrength;
-        protected PulseStage _pulseStage;
-        protected float _pulseSmallRadius;
-        protected float _pulseLargeRadius;
-        protected float _pulseSmallOutDuration;
-        protected float _pulseSmallInDuration;
-        protected float _pulseLargeOutDuration;
-        protected float _pulseLargeInDuration;
-        protected float _pulsePassOnTime;
-        protected float _lastPulseTime;
-        protected float _lifeLossPerSecond;
+        protected List<Leaf>    _parents;
+        protected List<Leaf>    _children;
+        protected int           _pulseDrain;
+        protected float         _radius;        //Radius in logic code, used for distance checking etc.
+        protected float         _drawRadius;    //Radius used for drawing, has no effect on logic
+        protected float         _normalRadius;  //Radius in normal state
 
-        private float _maxLife;
-        private float _life;
+        protected bool          _doPulsePassOn;
+        protected int           _pulseStrength;
+        protected PulseStage    _pulseStage;
+        protected float         _pulseSmallRadius;
+        protected float         _pulseLargeRadius;
+        protected float         _pulseSmallOutDuration;
+        protected float         _pulseSmallInDuration;
+        protected float         _pulseLargeOutDuration;
+        protected float         _pulseLargeInDuration;
+        protected float         _pulsePassOnTime;
+        protected float         _lastPulseTime;
+        protected float         _lifeLossPerSecond;
 
-        private float _radiusScaleVelocity;
-        private float _targetRadius;
-        private bool _doingRadiusAnimation;
+        private float           _maxLife;
+        private float           _life;
+
+        private float           _radiusScaleVelocity;
+        private float           _targetRadius;
+        private bool            _doingRadiusAnimation;
+
+        private float           _selectedTextureScale;
+        private Texture2D       _selectedTexture;
+        private Color           _selectedColor;
 
         public Leaf(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
             _texture                = gameManager.Content.Load<Texture2D>("Textures/circle_white_320");
+            _selectedTexture        = gameManager.Content.Load<Texture2D>("Textures/circle_edge_white_320");
             _radius                 = Config.settings["LeafRadius"];
             _normalRadius           = _radius;
             _drawRadius             = _radius;
@@ -62,6 +70,7 @@ namespace Folium.Entities
             _doingRadiusAnimation   = false;
             _targetRadius           = 1;
             _drawScale              = _radius/_texture.Width * 2;
+            _selectedTextureScale   = _normalRadius/_selectedTexture.Width * 2;
             _pulseSmallRadius       = Config.settings["LeafPulseSmallRadius"];
             _pulseLargeRadius       = Config.settings["LeafPulseLargeRadius"];
             _pulseSmallOutDuration  = Config.settings["LeafPulseSmallOutDuration"];
@@ -74,6 +83,8 @@ namespace Folium.Entities
             _lastPulseTime          = 0;
             _life                   = _maxLife;
             _doPulsePassOn          = false;
+            isSelected              = false;
+            _selectedColor          = new Color(47, 79, 79, 150);
         }
 
         #region Getters/Setters
@@ -82,10 +93,11 @@ namespace Folium.Entities
 
         public void setRadius(float radius) 
         {
-            _radius         = radius;
-            _drawRadius     = radius;
-            _normalRadius   = radius;
-            _drawScale      = _radius/_texture.Width * 2;
+            _radius                 = radius;
+            _drawRadius             = radius;
+            _normalRadius           = radius;
+            _drawScale              = _radius/_texture.Width * 2;
+            _selectedTextureScale   = _radius/_selectedTexture.Width * 2;
         }
         #endregion
 
@@ -196,6 +208,21 @@ namespace Folium.Entities
                 _doPulsePassOn = false;
                 for (int i = 0; i < _children.Count; i++)
                     _children[i].pulse(_pulseStrength - _pulseDrain); //Pulse the children
+            }
+        }
+
+        public override void drawWorldSpace(SpriteBatch spriteBatch)
+        {
+            base.drawWorldSpace(spriteBatch);
+
+            if (isSelected && _selectedTexture != null)
+            {
+                //This entity's position in screen space
+                Vector2 posScreenSpace = GameManager.worldOrigin + _position * GameManager.zoomLevel;
+
+                spriteBatch.Draw(_selectedTexture, posScreenSpace, null,
+                                 _selectedColor, _rotation, new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
+                                 _selectedTextureScale * GameManager.zoomLevel, SpriteEffects.None, 0);
             }
         }
     }

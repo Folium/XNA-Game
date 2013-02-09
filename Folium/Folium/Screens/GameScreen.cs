@@ -81,6 +81,8 @@ namespace Folium.Screens
             Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.worldOrigin;
             for (int i = 0; i < _leaves.Count; i++) //Find closest leaf
             {
+                _leaves[i].isSelected = false;
+
                 float distToLeaf = (_leaves[i].getPosition() - mouseWorldPos).Length() - _leaves[i].getRadius();
                 if (distToLeaf < closestDist && distToLeaf >= 0) //Find closest leaf
                 {
@@ -91,6 +93,7 @@ namespace Folium.Screens
 
             if (closestLeaf != null) //We have a winner!
             {
+                closestLeaf.isSelected  = true;
                 Vector2 leafToMouse     = mouseWorldPos - closestLeaf.getPosition();
                 leafToMouse.Normalize();
                 leafToMouse             *= closestLeaf.getRadius();

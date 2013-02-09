@@ -24,30 +24,30 @@ namespace Folium.Entities
 
         public DrawableEntity(GameManager gameManager, Screen screen)
         {
-            doDraw          = true;
+            doDraw              = true;
 
-            _gameManager    = gameManager;
-            _screen         = screen;
-            _texture        = null;
-            _position       = Vector2.Zero;
-            _drawColor      = Color.White;
-            _drawScale      = 1;
-            _rotation       = 0;
-            _alive          = true;
+            _gameManager        = gameManager;
+            _screen             = screen;
+            _texture            = null;
+            _position           = Vector2.Zero;
+            _drawColor          = Color.White;
+            _drawScale          = 1;
+            _rotation           = 0;
+            _alive              = true;
         }
 
         public DrawableEntity(GameManager gameManager, Screen screen, String texture)
         {
-            doDraw          = true;
+            doDraw              = true;
 
-            _gameManager    = gameManager;
-            _screen         = screen;
-            _texture        = gameManager.Content.Load<Texture2D>(texture);
-            _position       = Vector2.Zero;
-            _drawColor      = Color.White;
-            _drawScale      = 1;
-            _rotation       = 0;
-            _alive          = true;
+            _gameManager        = gameManager;
+            _screen             = screen;
+            _texture            = gameManager.Content.Load<Texture2D>(texture);
+            _position           = Vector2.Zero;
+            _drawColor          = Color.White;
+            _drawScale          = 1;
+            _rotation           = 0;
+            _alive              = true;
         }
 
         #region Getters/Setters
