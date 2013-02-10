@@ -75,10 +75,10 @@ namespace Folium.Screens
         {
             base.update(dT);
 
-            #region Seed cursor placement
+            #region Seed (cursor) placement
             Leaf closestLeaf        = null;
             float closestDist       = float.MaxValue;
-            Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.worldOrigin;
+            Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.WORLDOGIRIN;
             for (int i = 0; i < _leaves.Count; i++) //Find closest leaf
             {
                 _leaves[i].isSelected = false;
@@ -123,9 +123,9 @@ namespace Folium.Screens
             _seedCursor.update(dT);
 
             //Pulse hearts
-            if (GameManager.currentTime - _lastPulseTime >= _timeBetweenPulses)
+            if (GameManager.CURRENTTIME - _lastPulseTime >= _timeBetweenPulses)
             {
-                _lastPulseTime = GameManager.currentTime;
+                _lastPulseTime = GameManager.CURRENTTIME;
                 for (int i = 0; i < _hearts.Count; i++)
                     _hearts[i].pulse();
             }

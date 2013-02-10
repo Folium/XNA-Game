@@ -86,6 +86,11 @@ namespace Folium.Entities
             _doPulsePassOn          = false;
             isSelected              = false;
             _distToColors           = new float[GameManager.NUM_COLORS];
+
+            for (int i = 0; i < GameManager.NUM_COLORS; i++)
+                _distToColors[i] = -1;
+
+            //_distToColors[0] = 1;
         }
 
         #region Getters/Setters
@@ -115,6 +120,49 @@ namespace Folium.Entities
         }
 
         /// <summary>
+        /// Sets the distance to a color source (e.g. a heart or a leaf eating an energy source) and
+        /// sets the correct color for this leaf based on all distances.
+        /// </summary>
+        /// <param name="colorIndex"></param>
+        /// <param name="distance"></param>
+        public void setDistToColor(int colorIndex, float distance)
+        {
+            if (colorIndex == (int)GameManager.LeafColorIndex.NORMAL) //Distance to color 'normal' must ALWAYS be 1
+                _distToColors[(int)GameManager.LeafColorIndex.NORMAL] = 1;
+            else
+                _distToColors[colorIndex] = distance;
+
+            float totalDist = 0;
+            for (int i = 0; i < _distToColors.Length; i++) //Add up all distances
+                if(_distToColors[i] > 0 && _distToColors[i] <= GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
+                    totalDist += _distToColors[i];
+
+            if (totalDist == 1) //If the only contributing color is 'normal' than we can return here.
+            {
+                _drawColor = GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL];
+                return;
+            }
+
+            _drawColor.R = 0;
+            _drawColor.G = 0;
+            _drawColor.B = 0;
+            _drawColor.A = 0;
+
+            for (int i = 0; i < _distToColors.Length; i++) //Calculate the new color
+            {
+                if (_distToColors[i] <= 0 || _distToColors[i] > GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
+                    continue;
+
+                float contribution = 1 - _distToColors[i]/totalDist;
+
+                _drawColor.R += (byte)(GameManager.LEAFCOLORS[i].R * contribution);
+                _drawColor.G += (byte)(GameManager.LEAFCOLORS[i].G * contribution);
+                _drawColor.B += (byte)(GameManager.LEAFCOLORS[i].B * contribution);
+                _drawColor.A += (byte)(GameManager.LEAFCOLORS[i].A * contribution);
+            }
+        }
+
+        /// <summary>
         /// Initiates a pulse.
         /// </summary>
         /// <param name="pulseStrength"></param>
@@ -124,7 +172,7 @@ namespace Folium.Entities
 
             if (pulseStrength > 0)
             {
-                _lastPulseTime  = GameManager.currentTime;
+                _lastPulseTime  = GameManager.CURRENTTIME;
                 _doPulsePassOn  = true;
                 _life           = _maxLife;
                 _pulseStage     = PulseStage.outSmall;
@@ -188,6 +236,9 @@ namespace Folium.Entities
                 _children.Add(child);
             if (!child._parents.Contains(this))
                 child._parents.Add(this);
+
+            for (int i = 0; i < GameManager.NUM_COLORS; i++)
+                child.setDistToColor(i, _distToColors[i]+1);
         }
 
         public override void update(float dT)
@@ -204,7 +255,7 @@ namespace Folium.Entities
             updateScaleAnimation(dT);
 
             //Pass on pulse
-            if (_doPulsePassOn && GameManager.currentTime - _lastPulseTime >= _pulsePassOnTime)
+            if (_doPulsePassOn && GameManager.CURRENTTIME - _lastPulseTime >= _pulsePassOnTime)
             {
                 _doPulsePassOn = false;
                 for (int i = 0; i < _children.Count; i++)
@@ -219,12 +270,12 @@ namespace Folium.Entities
             if (isSelected && _selectedTexture != null)
             {
                 //This entity's position in screen space
-                Vector2 posScreenSpace = GameManager.worldOrigin + _position * GameManager.zoomLevel;
+                Vector2 posScreenSpace = GameManager.WORLDOGIRIN + _position * GameManager.ZOOMLEVEL;
 
                 spriteBatch.Draw(_selectedTexture, posScreenSpace, null,
                                  Color.FromNonPremultiplied(47, 79, 79, 80), _rotation, 
                                  new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
-                                 _selectedTextureScale * GameManager.zoomLevel, SpriteEffects.None, 0);
+                                 _selectedTextureScale * GameManager.ZOOMLEVEL, SpriteEffects.None, 0);
             }
         }
     }

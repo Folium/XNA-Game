@@ -79,11 +79,11 @@ namespace Folium.Entities
                 return;
 
             //This entity's position in screen space
-            Vector2 posScreenSpace = GameManager.worldOrigin + _position * GameManager.zoomLevel;
+            Vector2 posScreenSpace = GameManager.WORLDOGIRIN + _position * GameManager.ZOOMLEVEL;
 
             spriteBatch.Draw(_texture, posScreenSpace, null,
                              _drawColor, _rotation, new Vector2(_texture.Width/2, _texture.Height/2),
-                             _drawScale * GameManager.zoomLevel, SpriteEffects.None, 0);
+                             _drawScale * GameManager.ZOOMLEVEL, SpriteEffects.None, 0);
         }
 
         public virtual void drawScreenSpace(SpriteBatch spriteBatch)
