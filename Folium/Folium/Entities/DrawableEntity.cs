@@ -24,30 +24,30 @@ namespace Folium.Entities
 
         public DrawableEntity(GameManager gameManager, Screen screen)
         {
-            doDraw          = true;
+            doDraw              = true;
 
-            _gameManager    = gameManager;
-            _screen         = screen;
-            _texture        = null;
-            _position       = Vector2.Zero;
-            _drawColor      = Color.White;
-            _drawScale      = 1;
-            _rotation       = 0;
-            _alive          = true;
+            _gameManager        = gameManager;
+            _screen             = screen;
+            _texture            = null;
+            _position           = Vector2.Zero;
+            _drawColor          = Color.White;
+            _drawScale          = 1;
+            _rotation           = 0;
+            _alive              = true;
         }
 
         public DrawableEntity(GameManager gameManager, Screen screen, String texture)
         {
-            doDraw          = true;
+            doDraw              = true;
 
-            _gameManager    = gameManager;
-            _screen         = screen;
-            _texture        = gameManager.Content.Load<Texture2D>(texture);
-            _position       = Vector2.Zero;
-            _drawColor      = Color.White;
-            _drawScale      = 1;
-            _rotation       = 0;
-            _alive          = true;
+            _gameManager        = gameManager;
+            _screen             = screen;
+            _texture            = gameManager.Content.Load<Texture2D>(texture);
+            _position           = Vector2.Zero;
+            _drawColor          = Color.White;
+            _drawScale          = 1;
+            _rotation           = 0;
+            _alive              = true;
         }
 
         #region Getters/Setters
@@ -79,11 +79,11 @@ namespace Folium.Entities
                 return;
 
             //This entity's position in screen space
-            Vector2 posScreenSpace = GameManager.worldOrigin + _position * GameManager.zoomLevel;
+            Vector2 posScreenSpace = GameManager.WORLDOGIRIN + _position * GameManager.ZOOMLEVEL;
 
             spriteBatch.Draw(_texture, posScreenSpace, null,
                              _drawColor, _rotation, new Vector2(_texture.Width/2, _texture.Height/2),
-                             _drawScale * GameManager.zoomLevel, SpriteEffects.None, 0);
+                             _drawScale * GameManager.ZOOMLEVEL, SpriteEffects.None, 0);
         }
 
         public virtual void drawScreenSpace(SpriteBatch spriteBatch)

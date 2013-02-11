@@ -28,7 +28,7 @@ namespace Folium.Screens
             _hearts             = new List<Heart>();
             _leaves             = new List<Leaf>(32);
             _seedCursor         = new DrawableEntity(gameManager, this, "Textures/placement_cursor");
-            _timeBetweenPulses  = Config.settings["HeartTimeBetweenPulses"];
+            _timeBetweenPulses  = Config.settings["Heart.TimeBetweenPulses"];
             _lastPulseTime      = 0;
 
             _seedCursor.setScale(0.25f);
@@ -56,7 +56,7 @@ namespace Folium.Screens
         public void addLeaf(Leaf leaf, bool doInit = true)
         {
             _leaves.Add(leaf);
-            addEntity(leaf, doInit);
+            addEntity(leaf, true, doInit);
         }
 
         public override void removeEntity(DrawableEntity entity)
@@ -75,12 +75,14 @@ namespace Folium.Screens
         {
             base.update(dT);
 
-            #region Seed cursor placement
+            #region Seed (cursor) placement
             Leaf closestLeaf        = null;
             float closestDist       = float.MaxValue;
-            Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.worldOrigin;
+            Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.WORLDOGIRIN;
             for (int i = 0; i < _leaves.Count; i++) //Find closest leaf
             {
+                _leaves[i].isSelected = false;
+
                 float distToLeaf = (_leaves[i].getPosition() - mouseWorldPos).Length() - _leaves[i].getRadius();
                 if (distToLeaf < closestDist && distToLeaf >= 0) //Find closest leaf
                 {
@@ -91,6 +93,7 @@ namespace Folium.Screens
 
             if (closestLeaf != null) //We have a winner!
             {
+                closestLeaf.isSelected  = true;
                 Vector2 leafToMouse     = mouseWorldPos - closestLeaf.getPosition();
                 leafToMouse.Normalize();
                 leafToMouse             *= closestLeaf.getRadius();
@@ -120,9 +123,9 @@ namespace Folium.Screens
             _seedCursor.update(dT);
 
             //Pulse hearts
-            if (GameManager.currentTime - _lastPulseTime >= _timeBetweenPulses)
+            if (GameManager.CURRENTTIME - _lastPulseTime >= _timeBetweenPulses)
             {
-                _lastPulseTime = GameManager.currentTime;
+                _lastPulseTime = GameManager.CURRENTTIME;
                 for (int i = 0; i < _hearts.Count; i++)
                     _hearts[i].pulse();
             }
