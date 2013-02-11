@@ -110,7 +110,7 @@
     <Compile Include="Entities\DrawableEntity.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Entities\Food.cs" />
+    <Compile Include="Entities\FoodSource.cs" />
     <Compile Include="Entities\Heart.cs" />
     <Compile Include="Entities\Leaf.cs" />
     <Compile Include="Entities\MovableEntity.cs" />
