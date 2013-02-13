@@ -10,13 +10,13 @@ namespace Folium.Entities
 {
     public class Heart : Leaf
     {
-        private List<Leaf> _connectedEnergyLeaves;
+        private List<Leaf> _connectedFoodLeaves;
 
         public Heart(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
             _drawColor              = Color.IndianRed;
-            _connectedEnergyLeaves  = new List<Leaf>();
+            _connectedFoodLeaves    = new List<Leaf>();
             _pulseStrength          = (int)Config.settings["Heart.InitialPulseStrength"];
             _pulseSmallRadius       = Config.settings["Heart.PulseSmallRadius"];
             _pulseLargeRadius       = Config.settings["Heart.PulseLargeRadius"];
@@ -38,27 +38,36 @@ namespace Folium.Entities
             base.pulse(_pulseStrength);
         }
 
-        public override void registerEnergyLeaf(Leaf leafToRegister)
+        public override void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten)
         {
-            if (!_connectedEnergyLeaves.Contains(leafToRegister))
+            if (!_connectedFoodLeaves.Contains(leafToRegister))
             {
-                _connectedEnergyLeaves.Add(leafToRegister);
-                _pulseStrength += leafToRegister.getPulseStrength();
+                _connectedFoodLeaves.Add(leafToRegister);
+                _pulseStrength += foodBeingEaten.getEnergyAmount();
             }
         }
 
         public override void update(float dT)
         {
-            //Check connected energy leaves and remove some if necessary
-            for (int i = 0; i < _connectedEnergyLeaves.Count; i++)
-            {
-                Leaf temp = _connectedEnergyLeaves[i];
-                _pulseStrength -= temp.getPulseStrength();
-                _connectedEnergyLeaves.RemoveAt(i);
-                temp.registerEnergyLeaf(temp);
-            }
+            FoodCheck();
 
             base.update(dT);
+        }
+
+        //Check connected foodleaves and remove some if necessary
+        private void FoodCheck()
+        { 
+            for (int i = 0; i < _connectedFoodLeaves.Count; i++)
+            {
+                Leaf CFLeaf = _connectedFoodLeaves[i];
+                _pulseStrength -= CFLeaf.getFoodBeingEaten().getEnergyAmount();
+                CFLeaf.setIsEating(false);
+                _connectedFoodLeaves.RemoveAt(i);
+                CFLeaf.registerFoodLeaf(CFLeaf, CFLeaf.getFoodBeingEaten());
+
+                if (_connectedFoodLeaves.Count > 0)
+                    _connectedFoodLeaves[_connectedFoodLeaves.Count-1].setIsEating(true);
+            }
         }
     }
 }

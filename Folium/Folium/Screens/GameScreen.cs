@@ -12,9 +12,10 @@ namespace Folium.Screens
 {
     public class GameScreen : Screen
     {
-        private List<Pickup> _pickups;  //Contains all pickups
-        private List<Heart> _hearts;    //Contains all hearts
-        private List<Leaf> _leaves;     //Contains all leaves and hearts
+        private List<Pickup> _pickups;          //Contains all pickups
+        private List<Heart> _hearts;            //Contains all hearts
+        private List<Leaf> _leaves;             //Contains all leaves and hearts
+        private List<Food> _foodSources;  //Contains all foodsources 
 
         private DrawableEntity _seedCursor;
 
@@ -27,6 +28,8 @@ namespace Folium.Screens
             _pickups            = new List<Pickup>(32);
             _hearts             = new List<Heart>();
             _leaves             = new List<Leaf>(32);
+            _foodSources        = new List<Food>(32);
+
             _seedCursor         = new DrawableEntity(gameManager, this, "Textures/placement_cursor");
             _timeBetweenPulses  = Config.settings["Heart.TimeBetweenPulses"];
             _lastPulseTime      = 0;
@@ -37,6 +40,7 @@ namespace Folium.Screens
 
         #region Getters/Setters
         public List<Pickup> getPickups() {return _pickups;}
+        public List<Food> getFoodSources() {return _foodSources;}
         #endregion
 
         public override void initialize()

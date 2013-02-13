@@ -49,8 +49,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Textures\energy_source_160.png">
-      <Name>energy_source_160</Name>
+    <Compile Include="Textures\food_160.png">
+      <Name>food_160</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
