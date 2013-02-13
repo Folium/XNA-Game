@@ -231,10 +231,12 @@ namespace Folium.Entities
         /// This function is recursively called on the parents until it reaches a heart or a leaf that has no parents.
         /// </summary>
         /// <param name="?"></param>
-        public virtual void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten)
+        public virtual void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten, int sequenceLength = 0)
         {
+            sequenceLength++;
+            
             for (int i = 0; i < _parents.Count; i++)
-                _parents[i].registerFoodLeaf(leafToRegister, foodBeingEaten);
+                _parents[i].registerFoodLeaf(leafToRegister, foodBeingEaten, sequenceLength);
         }
 
         public void addChild(Leaf child)
@@ -272,6 +274,20 @@ namespace Folium.Entities
             collisionCheck();
         }
 
+        public void startEating(Food foodBeingEaten)
+        {
+            _isEating = true;
+            _foodBeingEaten = foodBeingEaten;
+
+        }
+
+        public void stopEating()
+        {
+            _isEating = false;
+            _foodBeingEaten = null;
+
+        }
+
         public override void drawWorldSpace(SpriteBatch spriteBatch)
         {
             base.drawWorldSpace(spriteBatch);
@@ -295,10 +311,8 @@ namespace Folium.Entities
                 //checks if the leaf is touching some food. If it does the leaf will start eating it. 
                 if (!food.getIsBeingEaten() && (this._position - food.getPosition()).Length() <= this._radius + food.getRadius())
                 {
-                    food.resolveCollision(this);
-                    _isEating = true;
-                    _foodBeingEaten = food;
-                    registerFoodLeaf(this, _foodBeingEaten);
+                    startEating(food);
+                    registerFoodLeaf(this, food);
                 }
             }
         }

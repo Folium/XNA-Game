@@ -38,10 +38,12 @@ namespace Folium.Entities
             base.pulse(_pulseStrength);
         }
 
-        public override void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten)
+        public override void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten, int sequenceLength)
         {
-            if (!_connectedFoodLeaves.Contains(leafToRegister))
+            if (!_connectedFoodLeaves.Contains(leafToRegister) && sequenceLength < _pulseStrength + foodBeingEaten.getEnergyAmount())
             {
+                leafToRegister.startEating(foodBeingEaten);
+                foodBeingEaten.resolveCollision(this);
                 _connectedFoodLeaves.Add(leafToRegister);
                 _pulseStrength += foodBeingEaten.getEnergyAmount();
             }
@@ -60,13 +62,12 @@ namespace Folium.Entities
             for (int i = 0; i < _connectedFoodLeaves.Count; i++)
             {
                 Leaf CFLeaf = _connectedFoodLeaves[i];
+                Food foodBE = CFLeaf.getFoodBeingEaten();
                 _pulseStrength -= CFLeaf.getFoodBeingEaten().getEnergyAmount();
-                CFLeaf.setIsEating(false);
+                CFLeaf.stopEating();
+                foodBE.stopBeingEating();
                 _connectedFoodLeaves.RemoveAt(i);
-                CFLeaf.registerFoodLeaf(CFLeaf, CFLeaf.getFoodBeingEaten());
-
-                if (_connectedFoodLeaves.Count > 0)
-                    _connectedFoodLeaves[_connectedFoodLeaves.Count-1].setIsEating(true);
+                CFLeaf.registerFoodLeaf(CFLeaf, foodBE);
             }
         }
     }

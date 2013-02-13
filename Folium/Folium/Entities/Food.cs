@@ -36,6 +36,8 @@ namespace Folium.Entities
                 startBeingEating((Leaf)collider);
         }
 
+        public void stopBeingEating() { _isBeingEaten = false; }
+        
         private void startBeingEating(Leaf collider) { _isBeingEaten = true; }
     }
 }
