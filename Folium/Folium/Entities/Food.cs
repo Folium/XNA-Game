@@ -11,13 +11,15 @@ namespace Folium.Entities
 {
     public class Food : SphereEntity
     {
+        private GameManager _gameManager;
         private bool    _isBeingEaten;
         private int     _energyAmount;
 
         public Food(GameManager gameManager, Screen screen, Vector2 position)
             : base(gameManager, screen)
         {
-            _texture        = gameManager.Content.Load<Texture2D>("Textures/food_160");
+            _gameManager    = gameManager;
+            _texture        = _gameManager.Content.Load<Texture2D>("Textures/food_160");
             _radius         = _texture.Width/2;
             _isBeingEaten   = false;
             _energyAmount = (int)Config.settings["Food.Normal.EnergyAmount"];
@@ -33,11 +35,19 @@ namespace Folium.Entities
         public override void resolveCollision(GameEntity collider)
         {
             if (collider is Leaf)
-                startBeingEating((Leaf)collider);
+                startBeingConsumed((Leaf)collider);
         }
 
-        public void stopBeingEating() { _isBeingEaten = false; }
+        public void stopBeingConsumed() 
+        {
+            _texture = _gameManager.Content.Load<Texture2D>("Textures/food_160");
+            _isBeingEaten = false; 
+        }
         
-        private void startBeingEating(Leaf collider) { _isBeingEaten = true; }
+        private void startBeingConsumed(Leaf collider) 
+        {
+            _texture = _gameManager.Content.Load<Texture2D>("Textures/food_being_consumed_160");
+            _isBeingEaten = true;
+        }
     }
 }

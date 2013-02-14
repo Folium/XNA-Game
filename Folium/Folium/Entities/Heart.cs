@@ -65,7 +65,7 @@ namespace Folium.Entities
                 Food foodBE = CFLeaf.getFoodBeingEaten();
                 _pulseStrength -= CFLeaf.getFoodBeingEaten().getEnergyAmount();
                 CFLeaf.stopEating();
-                foodBE.stopBeingEating();
+                foodBE.stopBeingConsumed();
                 _connectedFoodLeaves.RemoveAt(i);
                 CFLeaf.registerFoodLeaf(CFLeaf, foodBE);
             }
