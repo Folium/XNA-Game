@@ -38,7 +38,10 @@ namespace Folium.Main
 
         public GameManager()
         {
-            new Config("../../../settings.config");
+            if(File.Exists("settings.config"))
+                new Config("settings.config");
+            else
+                new Config("../../../settings.config");
 
             _graphics               = new GraphicsDeviceManager(this);
             Content.RootDirectory   = "Content";

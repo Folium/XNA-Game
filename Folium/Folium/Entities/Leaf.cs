@@ -89,8 +89,6 @@ namespace Folium.Entities
 
             for (int i = 0; i < GameManager.NUM_COLORS; i++)
                 _distToColors[i] = -1;
-
-            //_distToColors[0] = 1;
         }
 
         #region Getters/Setters
