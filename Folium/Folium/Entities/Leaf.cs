@@ -97,7 +97,6 @@ namespace Folium.Entities
 
         #region Getters/Setters
         public int getPulseStrength() { return _pulseStrength; }
-
         public Food getFoodBeingEaten() { return _foodBeingEaten; }
 
         public override void setRadius(float radius) 
@@ -108,6 +107,8 @@ namespace Folium.Entities
             _drawScale              = _radius/_texture.Width * 2;
             _selectedTextureScale   = _radius/_selectedTexture.Width * 2;
         }
+        public void setIsEating(bool status) { _isEating = status; }
+        #endregion
 
         /// <summary>
         /// Sets the target scale and the time it should take to reach this scale.
@@ -182,9 +183,6 @@ namespace Folium.Entities
                 }
             }
         }
-
-        public void setIsEating(bool status) { _isEating = status; }
-        #endregion
 
         /// <summary>
         /// Initiates a pulse.

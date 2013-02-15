@@ -63,6 +63,12 @@ namespace Folium.Screens
             addEntity(leaf, true, doInit);
         }
 
+        public void addFood(Food food, bool doInit = true)
+        {
+            _foodSources.Add(food);
+            addEntity(food, doInit);
+        }
+
         public override void removeEntity(DrawableEntity entity)
         {
             base.removeEntity(entity);
@@ -82,7 +88,7 @@ namespace Folium.Screens
             #region Seed (cursor) placement
             Leaf closestLeaf        = null;
             float closestDist       = float.MaxValue;
-            Vector2 mouseWorldPos   = (InputManager.getMousePos() - GameManager.WORLDOGIRIN) * GameManager.ZOOMLEVEL;
+            Vector2 mouseWorldPos   = (InputManager.getMousePos() - GameManager.WORLDOGIRIN)/GameManager.ZOOMLEVEL;
             for (int i = 0; i < _leaves.Count; i++) //Find closest leaf
             {
                 _leaves[i].isSelected = false;
