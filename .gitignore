@@ -2,6 +2,7 @@ Thumbs.db
 #File types
 *.suo
 *.user
+*.cachefile
 #Folders
 [Bb]in/
 [Dd]ebug*/

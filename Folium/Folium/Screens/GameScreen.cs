@@ -78,7 +78,7 @@ namespace Folium.Screens
             #region Seed (cursor) placement
             Leaf closestLeaf        = null;
             float closestDist       = float.MaxValue;
-            Vector2 mouseWorldPos   = InputManager.getMousePos() - GameManager.WORLDOGIRIN;
+            Vector2 mouseWorldPos   = (InputManager.getMousePos() - GameManager.WORLDOGIRIN) * GameManager.ZOOMLEVEL;
             for (int i = 0; i < _leaves.Count; i++) //Find closest leaf
             {
                 _leaves[i].isSelected = false;
