@@ -16,13 +16,16 @@ namespace Folium.Entities
         public SphereEntity(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
-           
         }
 
         #region Getters/Setters
         public float getRadius() { return _radius; }
 
-        public virtual void setRadius(float radius) { _radius = radius; }
+        public virtual void setRadius(float radius)
+        {
+            _radius = radius;
+            _drawScale = _radius / _texture.Width * 2;
+        }
         #endregion
     }
 }

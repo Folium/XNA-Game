@@ -14,16 +14,16 @@ namespace Folium.Entities
         private bool        _isBeingConsumed;
         private int         _energyAmount;
 
-        public Food(GameManager gameManager, Screen screen, Vector2 position)
+        public Food(GameManager gameManager, Screen screen, Vector2 position, float radius)
             : base(gameManager, screen)
         {
             _gameManager    = gameManager;
             _texture        = _gameManager.Content.Load<Texture2D>("Textures/food_160");
-            _radius         = _texture.Width/2;
             _isBeingConsumed   = false;
             _energyAmount = (int)Config.settings["Food.Normal.EnergyAmount"];
 
             setPosition(position);
+            setRadius((float)radius);
         }
 
         #region Getters/Setters
