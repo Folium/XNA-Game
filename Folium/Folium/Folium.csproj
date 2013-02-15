@@ -115,6 +115,7 @@
     <Compile Include="Entities\Leaf.cs" />
     <Compile Include="Entities\MovableEntity.cs" />
     <Compile Include="Entities\Pickup.cs" />
+    <Compile Include="Entities\SphereEntity.cs" />
     <Compile Include="Main\Config.cs" />
     <Compile Include="Main\InputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
