@@ -107,7 +107,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="Entities\DrawableEntity.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Folium.Entities
 {
-    public class SphereEntity : GameEntity
+    public class SphereEntity : DrawableEntity
     {
         protected float _radius;        //Radius in logic code, used for distance checking etc.
         

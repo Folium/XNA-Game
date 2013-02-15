@@ -11,7 +11,6 @@ namespace Folium.Entities
 {
     public class Food : SphereEntity
     {
-        private GameManager _gameManager;
         private bool        _isBeingConsumed;
         private int         _energyAmount;
 
@@ -32,7 +31,7 @@ namespace Folium.Entities
         public int getEnergyAmount() { return _energyAmount; }
         #endregion
 
-        public override void resolveCollision(GameEntity collider)
+        public void resolveCollision(DrawableEntity collider)
         {
             if (collider is Leaf)
                 startBeingConsumed((Leaf)collider);
