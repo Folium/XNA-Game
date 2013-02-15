@@ -111,6 +111,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Entities\Food.cs" />
+    <Compile Include="Entities\Generator.cs" />
     <Compile Include="Entities\Heart.cs" />
     <Compile Include="Entities\Leaf.cs" />
     <Compile Include="Entities\MovableEntity.cs" />

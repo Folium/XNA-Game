@@ -17,6 +17,8 @@ namespace Folium.Screens
         private List<Leaf> _leaves;             //Contains all leaves and hearts
         private List<Food> _foodSources;  //Contains all foodsources 
 
+		private Generator _generator;
+
         private DrawableEntity _seedCursor;
 
         private float _timeBetweenPulses;
@@ -36,11 +38,15 @@ namespace Folium.Screens
 
             _seedCursor.setScale(0.25f);
             _seedCursor.setColor(Color.DarkSlateGray);
+
+        	_generator = new Generator(_gameManager, this);
+			_generator.addType(typeof(Food), 5);
         }
 
         #region Getters/Setters
-        public List<Pickup> getPickups() {return _pickups;}
-        public List<Food> getFoodSources() {return _foodSources;}
+	    	public List<Pickup> getPickups() { return _pickups; }
+        	public List<Food> getFoodSources() {return _foodSources;}
+		    public List<Heart> getHearts() { return _hearts; }
         #endregion
 
         public override void initialize()
