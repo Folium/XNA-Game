@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 
 namespace Folium.Entities
 {
-    public class Leaf : DrawableEntity
+    public class Leaf : SphereEntity
     {
         protected enum PulseStage
         {
@@ -22,10 +22,10 @@ namespace Folium.Entities
 
         public bool isSelected;
 
+        protected GameScreen    _gameScreen;
         protected List<Leaf>    _parents;
         protected List<Leaf>    _children;
         protected int           _pulseDrain;
-        protected float         _radius;        //Radius in logic code, used for distance checking etc.
         protected float         _drawRadius;    //Radius used for drawing, has no effect on logic
         protected float         _normalRadius;  //Radius in normal state
 
@@ -53,10 +53,13 @@ namespace Folium.Entities
         private Texture2D       _selectedTexture;
 
         private float[]         _distToColors;
+        private bool            _isEating;
+        private Food            _foodBeingEaten;
 
         public Leaf(GameManager gameManager, Screen screen)
             : base(gameManager, screen)
         {
+            _gameScreen             = (GameScreen)screen;
             _texture                = gameManager.Content.Load<Texture2D>("Textures/circle_white_320");
             _selectedTexture        = gameManager.Content.Load<Texture2D>("Textures/circle_edge_white_320");
             _radius                 = Config.settings["Leaf.Radius"];
@@ -86,6 +89,7 @@ namespace Folium.Entities
             _doPulsePassOn          = false;
             isSelected              = false;
             _distToColors           = new float[GameManager.NUM_COLORS];
+            _isEating               = false;               
 
             for (int i = 0; i < GameManager.NUM_COLORS; i++)
                 _distToColors[i] = -1;
@@ -93,9 +97,10 @@ namespace Folium.Entities
 
         #region Getters/Setters
         public int getPulseStrength() { return _pulseStrength; }
-        public float getRadius() { return _radius; }
 
-        public void setRadius(float radius) 
+        public Food getFoodBeingEaten() { return _foodBeingEaten; }
+
+        public override void setRadius(float radius) 
         {
             _radius                 = radius;
             _drawRadius             = radius;
@@ -103,7 +108,6 @@ namespace Folium.Entities
             _drawScale              = _radius/_texture.Width * 2;
             _selectedTextureScale   = _radius/_selectedTexture.Width * 2;
         }
-        #endregion
 
         /// <summary>
         /// Sets the target scale and the time it should take to reach this scale.
@@ -179,6 +183,9 @@ namespace Folium.Entities
             }
         }
 
+        public void setIsEating(bool status) { _isEating = status; }
+        #endregion
+
         /// <summary>
         /// Initiates a pulse.
         /// </summary>
@@ -241,10 +248,12 @@ namespace Folium.Entities
         /// This function is recursively called on the parents until it reaches a heart or a leaf that has no parents.
         /// </summary>
         /// <param name="?"></param>
-        public virtual void registerEnergyLeaf(Leaf leafToRegister)
+        public virtual void registerFoodLeaf(Leaf leafToRegister, Food foodBeingEaten, int sequenceLength = 0)
         {
+            sequenceLength++;
+            
             for (int i = 0; i < _parents.Count; i++)
-                _parents[i].registerEnergyLeaf(leafToRegister);
+                _parents[i].registerFoodLeaf(leafToRegister, foodBeingEaten, sequenceLength);
         }
 
         public void addChild(Leaf child)
@@ -261,7 +270,7 @@ namespace Folium.Entities
         public override void update(float dT)
         {
             base.update(dT);
-
+            
             //Decrease life
             _life -= _lifeLossPerSecond * dT;
 
@@ -278,6 +287,22 @@ namespace Folium.Entities
                 for (int i = 0; i < _children.Count; i++)
                     _children[i].pulse(_pulseStrength - _pulseDrain); //Pulse the children
             }
+
+            collisionCheck();
+        }
+
+        public void startEating(Food foodBeingEaten)
+        {
+            _isEating = true;
+            _foodBeingEaten = foodBeingEaten;
+
+        }
+
+        public void stopEating()
+        {
+            _isEating = false;
+            _foodBeingEaten = null;
+
         }
 
         public override void drawWorldSpace(SpriteBatch spriteBatch)
@@ -293,6 +318,19 @@ namespace Folium.Entities
                                  Color.FromNonPremultiplied(47, 79, 79, 80), _rotation, 
                                  new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
                                  _selectedTextureScale * GameManager.ZOOMLEVEL, SpriteEffects.None, 0);
+            }
+        }
+
+        private void collisionCheck()
+        {
+            foreach (Food food in _gameScreen.getFoodSources())
+            {
+                //checks if the leaf is touching some food. If it does the leaf will start eating it. 
+                if (!food.getIsBeingEaten() && (this._position - food.getPosition()).Length() <= this._radius + food.getRadius())
+                {
+                    startEating(food);
+                    registerFoodLeaf(this, food);
+                }
             }
         }
     }

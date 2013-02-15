@@ -49,8 +49,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Textures\energy_source_160.png">
-      <Name>energy_source_160</Name>
+    <Compile Include="Textures\food_160.png">
+      <Name>food_160</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -65,6 +65,13 @@
   <ItemGroup>
     <Compile Include="Textures\circle_edge_white_320.png">
       <Name>circle_edge_white_320</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\food_being_consumed_160.png">
+      <Name>food_being_consumed_160</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
