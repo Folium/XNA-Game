@@ -65,7 +65,7 @@ namespace Folium.Main
             new ScreenManager(this);
 
             //Init leaf colors
-            NUM_COLORS = (int)Config.settings["Leaf.Color.Amount"];
+            NUM_COLORS          = (int)Config.settings["Leaf.Color.Amount"];
 
             for (int i = 0; i < NUM_COLORS; i++)
                 LEAFCOLORS[i] = Color.White;
@@ -75,7 +75,7 @@ namespace Folium.Main
             LEAFCOLORS[(int)LeafColorIndex.NORMAL].G         = (byte)Config.settings["Leaf.Color.Normal.G"];
             LEAFCOLORS[(int)LeafColorIndex.NORMAL].B         = (byte)Config.settings["Leaf.Color.Normal.B"];
             LEAFCOLORS[(int)LeafColorIndex.NORMAL].A         = (byte)Config.settings["Leaf.Color.Normal.A"];
-            MAX_DIST_TO_COLOR[(int)LeafColorIndex.NORMAL]    = Config.settings["Leaf.Color.Heart.MaxDist"];
+            MAX_DIST_TO_COLOR[(int)LeafColorIndex.NORMAL]    = Config.settings["Leaf.Color.Normal.MaxDist"];
 
             //Heart color
             LEAFCOLORS[(int)LeafColorIndex.HEART].R         = (byte)Config.settings["Leaf.Color.Heart.R"];

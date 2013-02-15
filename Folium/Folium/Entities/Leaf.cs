@@ -125,38 +125,57 @@ namespace Folium.Entities
         /// <param name="distance"></param>
         public void setDistToColor(int colorIndex, float distance)
         {
-            if (colorIndex == (int)GameManager.LeafColorIndex.NORMAL) //Distance to color 'normal' must ALWAYS be 1
-                _distToColors[(int)GameManager.LeafColorIndex.NORMAL] = 1;
-            else
-                _distToColors[colorIndex] = distance;
+            //Set distance
+            _distToColors[colorIndex] = distance;
 
+            //Calculate total distance and decide which colors are contributing
             float totalDist = 0;
-            for (int i = 0; i < _distToColors.Length; i++) //Add up all distances
-                if(_distToColors[i] > 0 && _distToColors[i] <= GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
+            List<int> contrColors = new List<int>();
+            for (int i = 0; i < _distToColors.Length; i++) //Add up all distances except for 'normal'
+                if (i != (int)GameManager.LeafColorIndex.NORMAL && 
+                    _distToColors[i] > 0 && 
+                    _distToColors[i] <= GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
+                {
                     totalDist += _distToColors[i];
+                    contrColors.Add(i);
+                }
 
-            if (totalDist == 1) //If the only contributing color is 'normal' than we can return here.
+            //Set actual color
+            if (contrColors.Count == 0) //The only contributing color is 'normal'
             {
                 _drawColor = GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL];
                 return;
             }
-
-            _drawColor.R = 0;
-            _drawColor.G = 0;
-            _drawColor.B = 0;
-            _drawColor.A = 0;
-
-            for (int i = 0; i < _distToColors.Length; i++) //Calculate the new color
+            else if (contrColors.Count == 1) //There is one contributing color apart from 'normal'
             {
-                if (_distToColors[i] <= 0 || _distToColors[i] > GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
-                    continue;
+                float contribution = 1 - _distToColors[contrColors[0]]/GameManager.MAX_DIST_TO_COLOR[contrColors[0]];
 
-                float contribution = 1 - _distToColors[i]/totalDist;
+                _drawColor.R = (byte)(GameManager.LEAFCOLORS[contrColors[0]].R * contribution);
+                _drawColor.G = (byte)(GameManager.LEAFCOLORS[contrColors[0]].G * contribution);
+                _drawColor.B = (byte)(GameManager.LEAFCOLORS[contrColors[0]].B * contribution);
+                _drawColor.A = (byte)(GameManager.LEAFCOLORS[contrColors[0]].A * contribution);
 
-                _drawColor.R += (byte)(GameManager.LEAFCOLORS[i].R * contribution);
-                _drawColor.G += (byte)(GameManager.LEAFCOLORS[i].G * contribution);
-                _drawColor.B += (byte)(GameManager.LEAFCOLORS[i].B * contribution);
-                _drawColor.A += (byte)(GameManager.LEAFCOLORS[i].A * contribution);
+                _drawColor.R += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].R * (1-contribution));
+                _drawColor.G += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].G * (1-contribution));
+                _drawColor.B += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].B * (1-contribution));
+                _drawColor.A += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].A * (1-contribution));
+            }
+            else //There are several colors contributing
+            {
+                _drawColor.R = 0;
+                _drawColor.G = 0;
+                _drawColor.B = 0;
+                _drawColor.A = 0;
+
+                for (int i = 0; i < contrColors.Count; i++) //Calculate the new color
+                {
+                    float contribution = 1 - _distToColors[contrColors[i]]/totalDist;
+
+                    _drawColor.R += (byte)(GameManager.LEAFCOLORS[contrColors[i]].R * contribution);
+                    _drawColor.G += (byte)(GameManager.LEAFCOLORS[contrColors[i]].G * contribution);
+                    _drawColor.B += (byte)(GameManager.LEAFCOLORS[contrColors[i]].B * contribution);
+                    _drawColor.A += (byte)(GameManager.LEAFCOLORS[contrColors[i]].A * contribution);
+                }
             }
         }
 
