@@ -12,10 +12,10 @@ namespace Folium.Screens
 {
     public class GameScreen : Screen
     {
-        private List<Pickup> _pickups;          //Contains all pickups
-        private List<Heart> _hearts;            //Contains all hearts
-        private List<Leaf> _leaves;             //Contains all leaves and hearts
-        private List<Food> _foodSources;  //Contains all foodsources 
+        private List<Pickup> _pickups;      //Contains all pickups
+        private List<Heart> _hearts;        //Contains all hearts
+        private List<Leaf> _leaves;         //Contains all leaves and hearts
+        private List<Food> _foodSources;    //Contains all foodsources 
 
         private DrawableEntity _seedCursor;
 
@@ -36,6 +36,8 @@ namespace Folium.Screens
 
             _seedCursor.setScale(0.25f);
             _seedCursor.setColor(Color.DarkSlateGray);
+
+            addFood(new Food(_gameManager, this, new Vector2(256, 256), 16));
         }
 
         #region Getters/Setters
@@ -106,7 +108,7 @@ namespace Folium.Screens
                 closestLeaf.isSelected  = true;
                 Vector2 leafToMouse     = mouseWorldPos - closestLeaf.getPosition();
                 leafToMouse.Normalize();
-                leafToMouse             *= closestLeaf.getRadius();
+                leafToMouse             *= closestLeaf.getRadius() + 1;
                 Vector2 seedPos         = closestLeaf.getPosition() + leafToMouse;
                 bool canPlace           = true;
 
@@ -116,11 +118,12 @@ namespace Folium.Screens
                         canPlace = false;
                 }
 
-                if(canPlace)
+                if (canPlace)
                     _seedCursor.setPosition(seedPos);
 
                 //Handle input
-                if (InputManager.isMouseLeftReleased())
+                if (InputManager.isMouseLeftReleased() && 
+                    _gameManager.GraphicsDevice.Viewport.Bounds.Contains(InputManager.getMouseX(), InputManager.getMouseY()))
                 {
                     Leaf newLeaf = new Leaf(_gameManager, this);
                     newLeaf.setPosition(_seedCursor.getPosition());

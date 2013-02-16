@@ -128,66 +128,88 @@ namespace Folium.Entities
         /// </summary>
         /// <param name="colorIndex"></param>
         /// <param name="distance"></param>
-        public void setDistToColor(int colorIndex, float distance)
+        public void updateDistToColor(int colorIndex, float distance)
         {
-            //Set distance
-            _distToColors[colorIndex] = distance;
+            if(_distToColors[colorIndex] > distance || _distToColors[colorIndex] == -1)
+                _distToColors[colorIndex] = distance;                
+            else //Nothing changed
+                return;
 
-            //Calculate total distance and decide which colors are contributing
-            float totalDist = 0;
-            List<int> contrColors = new List<int>();
-            for (int i = 0; i < _distToColors.Length; i++) //Add up all distances except for 'normal'
-                if (i != (int)GameManager.LeafColorIndex.NORMAL && 
-                    _distToColors[i] > 0 && 
-                    _distToColors[i] <= GameManager.MAX_DIST_TO_COLOR[i]) //Don't count irrelevant distances (too far away, etc.)
+            //Needs to be disabled for now
+            _distToColors[(int)GameManager.LeafColorIndex.NORMAL] = -1;
+
+            //Determine number of contributing colors, sum of distances and sum of maximum distances
+            int numContrColors  = 0;
+            float totalDist     = 0;
+            float totalMaxDist  = 0;
+            for (int i = 0; i < _distToColors.Length; i++)
+            {
+                if (_distToColors[i] > -1 && _distToColors[i] <= GameManager.MAX_DIST_TO_COLOR[i]) //Is the color contributing?
                 {
-                    totalDist += _distToColors[i];
-                    contrColors.Add(i);
-                }
+                    if (_distToColors[i] == 0) //If the distance to the color is 0 then this leaf must receive ONLY that color.
+                    {
+                        setColor(GameManager.LEAFCOLORS[i]);
+                        return;
+                    }
 
-            //Set actual color
-            if (contrColors.Count == 0) //The only contributing color is 'normal'
+                    totalDist       += _distToColors[i];
+                    totalMaxDist    += GameManager.MAX_DIST_TO_COLOR[i];
+                    numContrColors++;
+                }
+            }
+
+            //If there are no colors contributing the color should be 'normal'
+            if (numContrColors == 0)
             {
                 _drawColor = GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL];
                 return;
             }
-            else if (contrColors.Count == 1) //There is one contributing color apart from 'normal'
+
+            //Determine the distance to 'normal' color
+            _distToColors[(int)GameManager.LeafColorIndex.NORMAL] = totalMaxDist - totalDist;
+
+            //Start with a clean slate
+            _drawColor.R = 0;
+            _drawColor.G = 0;
+            _drawColor.B = 0;
+            _drawColor.A = 0;
+
+            //Update colors
+            float multiplyBy = (1.0f/(float)numContrColors);
+            for (int i = 0; i < _distToColors.Length; i++)
             {
-                float contribution = 1 - _distToColors[contrColors[0]]/GameManager.MAX_DIST_TO_COLOR[contrColors[0]];
+                if (_distToColors[i] == -1 || _distToColors[i] > GameManager.MAX_DIST_TO_COLOR[i])
+                    continue;
 
-                _drawColor.R = (byte)(GameManager.LEAFCOLORS[contrColors[0]].R * contribution);
-                _drawColor.G = (byte)(GameManager.LEAFCOLORS[contrColors[0]].G * contribution);
-                _drawColor.B = (byte)(GameManager.LEAFCOLORS[contrColors[0]].B * contribution);
-                _drawColor.A = (byte)(GameManager.LEAFCOLORS[contrColors[0]].A * contribution);
+                float contribution = (1 - _distToColors[i]/totalMaxDist) * multiplyBy;
 
-                _drawColor.R += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].R * (1-contribution));
-                _drawColor.G += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].G * (1-contribution));
-                _drawColor.B += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].B * (1-contribution));
-                _drawColor.A += (byte)(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL].A * (1-contribution));
+                _drawColor.R += (byte)(GameManager.LEAFCOLORS[i].R * contribution);
+                _drawColor.G += (byte)(GameManager.LEAFCOLORS[i].G * contribution);
+                _drawColor.B += (byte)(GameManager.LEAFCOLORS[i].B * contribution);
+                _drawColor.A += (byte)(GameManager.LEAFCOLORS[i].A * contribution);
             }
-            else //There are several colors contributing
-            {
-                _drawColor.R = 0;
-                _drawColor.G = 0;
-                _drawColor.B = 0;
-                _drawColor.A = 0;
+        }
 
-                for (int i = 0; i < contrColors.Count; i++) //Calculate the new color
-                {
-                    float contribution = 1 - _distToColors[contrColors[i]]/totalDist;
+        /// <summary>
+        /// Gives this leaf a specific color and spreads the color through all neighbouring leaves.
+        /// </summary>
+        /// <param name="colorIndex"></param>
+        /// <param name="distance"></param>
+        public void spreadDistToColor(int colorIndex, int dist)
+        {
+            if(_isEating || this is Heart || dist > GameManager.MAX_DIST_TO_COLOR[colorIndex])
+                return;
 
-                    _drawColor.R += (byte)(GameManager.LEAFCOLORS[contrColors[i]].R * contribution);
-                    _drawColor.G += (byte)(GameManager.LEAFCOLORS[contrColors[i]].G * contribution);
-                    _drawColor.B += (byte)(GameManager.LEAFCOLORS[contrColors[i]].B * contribution);
-                    _drawColor.A += (byte)(GameManager.LEAFCOLORS[contrColors[i]].A * contribution);
-                }
-            }
+            updateDistToColor(colorIndex, dist);
+
+            for (int i = 0; i < _parents.Count; i++)
+                _parents[i].spreadDistToColor(colorIndex, dist+1);
         }
 
         /// <summary>
         /// Initiates a pulse.
         /// </summary>
-        /// <param name="pulseStrength"></param>
+        /// <param name="pulseStrength">Determines how far the pulse travels through the children.</param>
         public virtual void pulse(int pulseStrength)
         {
             _pulseStrength = pulseStrength;
@@ -262,7 +284,12 @@ namespace Folium.Entities
                 child._parents.Add(this);
 
             for (int i = 0; i < GameManager.NUM_COLORS; i++)
-                child.setDistToColor(i, _distToColors[i]+1);
+            {
+                if (_distToColors[i] == -1 || _distToColors[i] > GameManager.MAX_DIST_TO_COLOR[i])
+                    child.updateDistToColor(i, -1);
+                else
+                    child.updateDistToColor(i, _distToColors[i]+1);
+            }
         }
 
         public override void update(float dT)
@@ -307,15 +334,23 @@ namespace Folium.Entities
         {
             base.drawWorldSpace(spriteBatch);
 
+            //This entity's position in screen space
+            Vector2 posScreenSpace = GameManager.WORLDOGIRIN + _position * GameManager.ZOOMLEVEL;
+
             if (isSelected && _selectedTexture != null)
             {
-                //This entity's position in screen space
-                Vector2 posScreenSpace = GameManager.WORLDOGIRIN + _position * GameManager.ZOOMLEVEL;
-
                 spriteBatch.Draw(_selectedTexture, posScreenSpace, null,
                                  Color.FromNonPremultiplied(47, 79, 79, 80), _rotation, 
                                  new Vector2(_selectedTexture.Width/2, _selectedTexture.Height/2),
                                  _selectedTextureScale * GameManager.ZOOMLEVEL, SpriteEffects.None, 0);
+
+                if (GameManager.DRAW_DEBUG_INFO)
+                {
+                    //Draw distances to colors
+                    for (int i = 0; i < _distToColors.Length; i++)
+                        spriteBatch.DrawString(GameManager.DEBUG_FONT, i.ToString() + ": " + _distToColors[i].ToString(),
+                                                new Vector2(0, i * GameManager.DEBUG_FONT.LineSpacing), Color.Black);
+                }
             }
         }
 
@@ -326,6 +361,11 @@ namespace Folium.Entities
                 //checks if the leaf is touching some food. If it does the leaf will start eating it. 
                 if (!food.getIsBeingEaten() && (this._position - food.getPosition()).Length() <= this._radius + food.getRadius())
                 {
+                    for (int i = 0; i < _distToColors.Length; i++) //Reset colors
+                        _distToColors[i] = -1;
+
+                    spreadDistToColor((int)GameManager.LeafColorIndex.NORMAL_FOOD, 0); //Spread new color
+                    setColor(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.NORMAL_FOOD]); //Set new color
                     startEating(food);
                     registerFoodLeaf(this, food);
                 }

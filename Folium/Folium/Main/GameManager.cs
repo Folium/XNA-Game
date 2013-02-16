@@ -18,9 +18,11 @@ namespace Folium.Main
         public enum LeafColorIndex
         {
             NORMAL,
-            HEART
+            HEART,
+            NORMAL_FOOD
         }
 
+        public static bool DRAW_DEBUG_INFO      = false;
         public static int NUM_COLORS            = 2;
         public static int SCREENWIDTH           = 1280;
         public static int SCREENHEIGHT          = 720;
@@ -30,6 +32,7 @@ namespace Folium.Main
         public static float CURRENTTIME         = 0;
         public static Color[] LEAFCOLORS        = new Color[NUM_COLORS];
         public static float[] MAX_DIST_TO_COLOR = new float[NUM_COLORS];
+        public static SpriteFont DEBUG_FONT;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -67,6 +70,8 @@ namespace Folium.Main
             //Init leaf colors
             NUM_COLORS          = (int)Config.settings["Leaf.Color.Amount"];
 
+            LEAFCOLORS          = new Color[NUM_COLORS];
+            MAX_DIST_TO_COLOR   = new float[NUM_COLORS];
             for (int i = 0; i < NUM_COLORS; i++)
                 LEAFCOLORS[i] = Color.White;
 
@@ -84,6 +89,13 @@ namespace Folium.Main
             LEAFCOLORS[(int)LeafColorIndex.HEART].A         = (byte)Config.settings["Leaf.Color.Heart.A"];
             MAX_DIST_TO_COLOR[(int)LeafColorIndex.HEART]    = Config.settings["Leaf.Color.Heart.MaxDist"];
 
+            //Normal color
+            LEAFCOLORS[(int)LeafColorIndex.NORMAL_FOOD].R         = (byte)Config.settings["Leaf.Color.NormalFood.R"];
+            LEAFCOLORS[(int)LeafColorIndex.NORMAL_FOOD].G         = (byte)Config.settings["Leaf.Color.NormalFood.G"];
+            LEAFCOLORS[(int)LeafColorIndex.NORMAL_FOOD].B         = (byte)Config.settings["Leaf.Color.NormalFood.B"];
+            LEAFCOLORS[(int)LeafColorIndex.NORMAL_FOOD].A         = (byte)Config.settings["Leaf.Color.NormalFood.A"];
+            MAX_DIST_TO_COLOR[(int)LeafColorIndex.NORMAL_FOOD]    = Config.settings["Leaf.Color.NormalFood.MaxDist"];
+
             ScreenManager.addScreen(new GameScreen(this));
             ScreenManager.getScreen("Game").initialize();
             ScreenManager.getScreen("Game").start();
@@ -92,7 +104,8 @@ namespace Folium.Main
         //LoadContent is called BEFORE Initialize
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch    = new SpriteBatch(GraphicsDevice);
+            DEBUG_FONT      = Content.Load<SpriteFont>("Fonts/debug_font");
         }
 
         protected override void UnloadContent()
@@ -104,10 +117,14 @@ namespace Folium.Main
             float deltaTime     = (float)gameTime.ElapsedGameTime.TotalSeconds;
             CURRENTTIME         = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            InputManager.update();
+            if(this.IsActive)
+                InputManager.update();
 
             if (InputManager.isKeyReleased(Keys.Escape))
                 this.Exit();
+
+            if(InputManager.isKeyReleased(Keys.F1))
+                DRAW_DEBUG_INFO = !DRAW_DEBUG_INFO;
 
             #region Update world origin and scale
             //Update world scale (zoom level)

@@ -28,8 +28,8 @@ namespace Folium.Entities
             _lifeLossPerSecond      = 0;
 
             setRadius(Config.settings["Heart.Radius"]);
-            setDistToColor((int)GameManager.LeafColorIndex.NORMAL, -1);
-            setDistToColor((int)GameManager.LeafColorIndex.HEART, 0);
+            updateDistToColor((int)GameManager.LeafColorIndex.NORMAL, -1);
+            updateDistToColor((int)GameManager.LeafColorIndex.HEART, 0);
             setColor(GameManager.LEAFCOLORS[(int)GameManager.LeafColorIndex.HEART]);
         }
 
